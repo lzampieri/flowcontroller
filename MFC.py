@@ -67,7 +67,7 @@ class MFC:
                     setpoint = self.max
                 if (setpoint < self.min):
                     setpoint = self.min
-                self.MFC.writeParameter(206, setpoint)
+                self.set_current_set_value( setpoint )
                 window[f'mfc:{self.port}:set_point'].update(
                     self.get_current_set_value(str=True))
             except ValueError:
@@ -78,7 +78,7 @@ class MFC:
         # Read
         if (len(self.data['reads']) > 0):
             window[f'mfc:{self.port}:current_value'].update(
-                self.data['reads'][-1])
+                f"{self.data['reads'][-1]:.2f}")
 
         # Set point
         window[f'mfc:{self.port}:target_value'].update(
