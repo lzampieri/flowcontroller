@@ -106,8 +106,8 @@ class MFC:
                 self.data['reads'].append(newval)
                 self.data['times'].append(newtime)
                 self.saver.save_callback(self, newtime, newval)
-            except Exception:
-                pass
+            except IndexError as e:
+                print("Index error, skipping")
 
             time.sleep(0.1)
 
