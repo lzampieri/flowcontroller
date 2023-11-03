@@ -19,7 +19,7 @@ class MFC:
 
         self.MFC = propar.instrument(port)
 
-        self.serial = self.MFC.readParameter(92) or "44"
+        self.serial = self.MFC.readParameter(92) or ""
         if (len(self.serial) == 0):
             raise SerialException("Unable to connect")
 
@@ -100,7 +100,13 @@ class MFC:
 
     def pool_thrd(self):
         while True:
-            print( f"{self.port} - Pooling - {self.MFC.master.msg_handler_thread.is_alive()}")
+            
+            # Check that messagging thread is still alive ( it has a bug, and sometimes it dies after a while )
+            if not self.MFC.master.msg_handler_thread.is_alive():
+                del self.MFC
+                self.MFC = propar.instrument(self.port)
+                print("Thread rebooted")
+
             try:
                 newval = self.get_current_value()
                 newtime = datetime.now().timestamp()
