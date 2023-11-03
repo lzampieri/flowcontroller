@@ -100,6 +100,7 @@ class MFC:
 
     def pool_thrd(self):
         while True:
+            print( f"{self.port} - Pooling - {self.MFC.master.msg_handler_thread.is_alive()}")
             try:
                 newval = self.get_current_value()
                 newtime = datetime.now().timestamp()
