@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 import threading
 import numpy as np
+from serial.serialutil import SerialException
 
 
 class MFC:
@@ -18,12 +19,19 @@ class MFC:
 
         self.MFC = propar.instrument(port)
 
+        self.serial = self.MFC.readParameter(92) or "44"
+        if (len(self.serial) == 0):
+            raise SerialException("Unable to connect")
+
         self.unit = self.MFC.readParameter(129)
         self.min = float(self.MFC.readParameter(
             183) or "0.0") * GasesFactors[self.gas]
         self.max = float(self.MFC.readParameter(
             21) or "0.0") * GasesFactors[self.gas]
-        self.serial = self.MFC.readParameter(92) or ""
+        
+        if ( self.max == self.min ):
+            del self.MFC
+            raise SerialException("Error in connection")
 
         self.layout = [[
             sg.Frame(f"{tag} ({gas}, {port})", [
@@ -67,7 +75,7 @@ class MFC:
                     setpoint = self.max
                 if (setpoint < self.min):
                     setpoint = self.min
-                self.set_current_set_value( setpoint )
+                self.set_current_set_value(setpoint)
                 window[f'mfc:{self.port}:set_point'].update(
                     self.get_current_set_value(str=True))
             except ValueError:
@@ -92,11 +100,15 @@ class MFC:
 
     def pool_thrd(self):
         while True:
-            newval = self.get_current_value()
-            newtime = datetime.now().timestamp()
-            self.data['reads'].append(newval)
-            self.data['times'].append(newtime)
-            self.saver.save_callback(self, newtime, newval)
+            try:
+                newval = self.get_current_value()
+                newtime = datetime.now().timestamp()
+                self.data['reads'].append(newval)
+                self.data['times'].append(newtime)
+                self.saver.save_callback(self, newtime, newval)
+            except Exception:
+                pass
+
             time.sleep(0.1)
 
     def get_current_value(self, str=False):
