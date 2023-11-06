@@ -10,8 +10,9 @@ from serial.serialutil import SerialException
 
 class MFC:
 
-    def __init__(self, port, gas, tag, axis, saver):
+    def __init__(self, port, gas, tag, axis, saver, ID):
 
+        self.ID = ID
         self.port = port
         self.gas = gas
         self.tag = tag
@@ -38,17 +39,17 @@ class MFC:
                 [sg.Text(f"SN: {self.serial}", font=('Helvetica', 7))],
                 [sg.Text(f"{self.min:.1f} to {self.max:.1f} {self.unit}", font=(
                     'Helvetica', 7))],
-                [sg.Text(f"...", key=f'mfc:{port}:current_value', font=(
+                [sg.Text(f"...", key=f'mfc:{ID}:current_value', font=(
                     'Helvetica', 18)), sg.Text(self.unit)],
                 [
                     sg.Text("Target: "),
                     sg.Text(self.get_current_set_value(str=True),
-                            key=f'mfc:{port}:target_value'),
+                            key=f'mfc:{ID}:target_value'),
                     sg.Input(
-                        default_text=self.get_current_set_value(str=True), key=f'mfc:{port}:set_point', size=8)
+                        default_text=self.get_current_set_value(str=True), key=f'mfc:{ID}:set_point', size=8)
                 ],
                 [sg.ProgressBar(max_value=100, orientation='h',
-                                size=(40, 10), key=f'mfc:{port}:progress')]
+                                size=(40, 10), key=f'mfc:{ID}:progress')]
             ])
         ]]
 
@@ -63,20 +64,20 @@ class MFC:
         self.line, = axis.plot([], [], label=tag)
 
     def bind_events(self, window):
-        window[f'mfc:{self.port}:set_point'].bind("<Return>", "_Enter")
+        window[f'mfc:{self.ID}:set_point'].bind("<Return>", "_Enter")
 
     def parse_events(self, event, values, window):
 
-        if event == f'mfc:{self.port}:set_point_Enter':
+        if event == f'mfc:{self.ID}:set_point_Enter':
 
             try:
-                setpoint = float(values[f'mfc:{self.port}:set_point'])
+                setpoint = float(values[f'mfc:{self.ID}:set_point'])
                 if (setpoint > self.max):
                     setpoint = self.max
                 if (setpoint < self.min):
                     setpoint = self.min
                 self.set_current_set_value(setpoint)
-                window[f'mfc:{self.port}:set_point'].update(
+                window[f'mfc:{self.ID}:set_point'].update(
                     self.get_current_set_value(str=True))
             except ValueError:
                 return
@@ -85,13 +86,13 @@ class MFC:
 
         # Read
         if (len(self.data['reads']) > 0):
-            window[f'mfc:{self.port}:current_value'].update(
+            window[f'mfc:{self.ID}:current_value'].update(
                 f"{self.data['reads'][-1]:.2f}")
 
         # Set point
-        window[f'mfc:{self.port}:target_value'].update(
+        window[f'mfc:{self.ID}:target_value'].update(
             self.get_current_set_value(str=True))
-        window[f'mfc:{self.port}:progress'].update(
+        window[f'mfc:{self.ID}:progress'].update(
             current_count=(self.get_current_set_value() - self.min) / (self.max - self.min) * 100)
 
         # Plot
@@ -103,9 +104,13 @@ class MFC:
             
             # Check that messagging thread is still alive ( it has a bug, and sometimes it dies after a while )
             if not self.MFC.master.msg_handler_thread.is_alive():
+                print(f"Error on MFC {self.serial}")
                 del self.MFC
+                print("Waiting 5 seconds before trying to reconnect")
+                time.sleep(5)
                 self.MFC = propar.instrument(self.port)
                 print("Thread rebooted")
+                print(f"New serial: {self.MFC.readParameter(92) or 'Error!'}")
 
             try:
                 newval = self.get_current_value()

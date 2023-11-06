@@ -14,6 +14,7 @@ class MainWindow:
 
     def __init__(self):
 
+        self.MFC_ID = 0
         self.connectedMFC = []
 
         self.saver = Saver.Saver(self.connectedMFC)
@@ -81,7 +82,8 @@ class MainWindow:
 
     def saveMFC(self, data):
         try:
-            newMFC = MFC.MFC(**data, axis=self.axis, saver=self.saver)
+            self.MFC_ID += 1
+            newMFC = MFC.MFC(**data, axis=self.axis, saver=self.saver, ID = self.MFC_ID)
         except SerialException as e:
             sg.popup_error("Impossibile connettersi alla porta")
             return
