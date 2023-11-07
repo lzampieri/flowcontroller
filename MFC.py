@@ -103,6 +103,11 @@ class MFC:
 
         # Plot
         idx = np.array( self.data['times'] ) > ( datetime.now().timestamp() - 60*5 )
+        print( np.sum( idx ) )
+        print( np.min( np.array( self.data['times'] ) ) )
+        print( np.max( np.array( self.data['times'] ) ) )
+        print(  datetime.now().timestamp() - 60*5 )
+        print( "---" )
         self.line.set_data( np.array(self.data['times'])[idx] / 60, np.array(self.data['reads'])[idx] )
 
     def pool_thrd(self):
