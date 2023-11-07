@@ -38,7 +38,6 @@ class MainWindow:
                                 layout=self.layout, finalize=True)
 
         self.init_plot()
-        self.st.refreshMFC( self.window )
 
         # TODO remove
         if (len(self.connectedMFC) == 0):
