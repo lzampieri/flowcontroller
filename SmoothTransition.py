@@ -20,8 +20,6 @@ class SmoothTransition:
             ]),
         ]] ) ]
 
-        self.refreshMFC()
-
     # def loop( self ):
     #     print("Loop thread")
     #     while True:
