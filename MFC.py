@@ -59,6 +59,7 @@ class MFC:
             'reads': []
         }
 
+        self.dead = False
         self.thread = threading.Thread(target=self.pool_thrd)
         self.thread.start()
 
@@ -85,6 +86,9 @@ class MFC:
 
     def update_window(self, window):
 
+        if( self.dead ):
+            return
+
         # Read
         if (len(self.data['reads']) > 0):
             window[f'mfc:{self.ID}:current_value'].update(
@@ -106,6 +110,7 @@ class MFC:
             # Check that messagging thread is still alive ( it has a bug, and sometimes it dies after a while )
             if not self.MFC.master.msg_handler_thread.is_alive():
                 
+                self.dead = True
                 print(f"Error on MFC {self.serial}")
                 self.MFC.master.stop()
                 del self.MFC
@@ -116,7 +121,10 @@ class MFC:
                 
                 self.MFC = propar.instrument(self.port)
                 print("Thread rebooted")
-                print(f"New serial: {self.MFC.readParameter(92) or 'Error!'}")
+                newserial = self.MFC.readParameter(92) or 'Error!'
+                print(f"New serial: {newserial}")
+                if( newserial == self.serial ):
+                    self.dead = False
 
             try:
                 newval = self.get_current_value()
@@ -130,6 +138,8 @@ class MFC:
             time.sleep(0.1)
 
     def get_current_value(self, str=False):
+        if( self.dead ):
+            return 0.0
         meas = float(self.MFC.readParameter(205) or "0.0") * \
             GasesFactors[self.gas]
         if (str):
@@ -137,6 +147,8 @@ class MFC:
         return meas
 
     def get_current_set_value(self, str=False):
+        if( self.dead ):
+            return 0.0
         meas = float(self.MFC.readParameter(206) or "0.0") * \
             GasesFactors[self.gas]
         if (str):
@@ -144,4 +156,6 @@ class MFC:
         return meas
 
     def set_current_set_value(self, val):
+        if( self.dead ):
+            return False
         self.MFC.writeParameter(206, val / GasesFactors[self.gas])
