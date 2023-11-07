@@ -22,6 +22,8 @@ class SmoothTransition:
             ]),
         ]] ) ]
 
+        self.steps = 100
+        self.i = 0
         self.toUpdate = True
         self.running = False
 
