@@ -26,9 +26,11 @@ class SmoothTransitionWindow:
 
         self.refreshMFC()
 
+        print("Loop thread starting...")
         self.loopthread = threading.Thread( target=self.loop )
 
     def loop( self ):
+        print("Loop thread")
         while True:
             event, values = self.window.read(timeout=100)
 
