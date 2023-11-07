@@ -1,14 +1,14 @@
 import PySimpleGUI as sg
 import threading
 
-class SmoothTransitionWindow:
+class SmoothTransition:
 
     def __init__(self, connectedMFC):
 
         self.connectedMFC = connectedMFC
 
         self.layout = [[
-            sg.Column([
+            sg.Frame("Transizione lineare", [[ sg.Column([
                 [sg.Frame("MFC", [[sg.Column([], key="st:col")]])],
                 [sg.Text("Durata [s]: "), sg.Input("30", key="st:duration")],
                 [
@@ -18,30 +18,22 @@ class SmoothTransitionWindow:
                 [sg.ProgressBar(100, orientation='h', size=(
                     40, 10), key='sg:progress')],
             ]),
-        ]]
-
-        # sg.theme('Dark')
-        self.window = sg.Window(title="Smooth Transition",
-                                layout=self.layout, finalize=True)
+        ]] ) ]]
 
         self.refreshMFC()
 
-        print("Loop thread starting...")
-        self.loopthread = threading.Thread( target=self.loop )
-        self.loopthread.start()
+    # def loop( self ):
+    #     print("Loop thread")
+    #     while True:
+    #         event, values = self.window.read(timeout=100)
 
-    def loop( self ):
-        print("Loop thread")
-        while True:
-            event, values = self.window.read(timeout=100)
+    #         if( event == 'sg:refresh' ):
+    #             self.refreshMFC()
 
-            if( event == 'sg:refresh' ):
-                self.refreshMFC()
+    #         print(event)
 
-            print(event)
-
-    def parse_mainwindow_events(self, event, values):
-        pass
+    # def parse_mainwindow_events(self, event, values):
+    #     pass
 
     def refreshMFC(self):
         for MFC in self.connectedMFC:
