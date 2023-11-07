@@ -7,7 +7,7 @@ class SmoothTransition:
 
         self.connectedMFC = connectedMFC
 
-        self.layout = [[
+        self.layout = [
             sg.Frame("Transizione lineare", [[ sg.Column([
                 [sg.Frame("MFC", [[sg.Column([], key="st:col")]])],
                 [sg.Text("Durata [s]: "), sg.Input("30", key="st:duration")],
@@ -18,7 +18,7 @@ class SmoothTransition:
                 [sg.ProgressBar(100, orientation='h', size=(
                     40, 10), key='sg:progress')],
             ]),
-        ]] ) ]]
+        ]] ) ]
 
         self.refreshMFC()
 
