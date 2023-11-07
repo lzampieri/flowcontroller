@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import AddMFCWindow
 import Saver
 import MFC
+import SmoothTransitionWindow
 from serial.serialutil import SerialException
 
 import matplotlib.pyplot as plt
@@ -25,6 +26,7 @@ class MainWindow:
                 [sg.Column([], key="main:col")],
                 [sg.Button("Aggiungi MFC", key='main:addMFC')],
                 self.saver.layout,
+                [sg.Button("Lancia Smooth Transition", key='main:st')],
                 [sg.Text("L. Zampieri - 11/2023", font=('Helvetica', 7))]
             ]),
             sg.Canvas(key='canvas')
@@ -35,6 +37,8 @@ class MainWindow:
                                 layout=self.layout, finalize=True)
 
         self.init_plot()
+
+        self.st = None
 
         # TODO remove
         if (len(self.connectedMFC) == 0):
@@ -57,6 +61,11 @@ class MainWindow:
 
             if (event == 'main:addMFC'):
                 self.addMFC()
+
+            if (event == 'main:st'):
+                if (self.st is None):
+                    self.st = SmoothTransitionWindow.SmoothTransitionWindow( self.connectedMFC )
+                self.window['main:st'].update(visible=False)
 
             if event == sg.WIN_CLOSED:
                 return
@@ -83,7 +92,8 @@ class MainWindow:
     def saveMFC(self, data):
         try:
             self.MFC_ID += 1
-            newMFC = MFC.MFC(**data, axis=self.axis, saver=self.saver, ID = self.MFC_ID)
+            newMFC = MFC.MFC(**data, axis=self.axis,
+                             saver=self.saver, ID=self.MFC_ID)
         except SerialException as e:
             sg.popup_error("Impossibile connettersi alla porta")
             return

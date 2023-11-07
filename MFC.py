@@ -24,8 +24,8 @@ class MFC:
         self.dead = False
 
         self.serial = self.MFC.readParameter(92) or ""
-        if (len(self.serial) == 0):
-            raise SerialException("Unable to connect")
+        # if (len(self.serial) == 0):
+        #     raise SerialException("Unable to connect")
 
         self.unit = self.MFC.readParameter(129)
         self.min = float(self.MFC.readParameter(
