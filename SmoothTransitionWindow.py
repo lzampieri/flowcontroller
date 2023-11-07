@@ -28,6 +28,7 @@ class SmoothTransitionWindow:
 
         print("Loop thread starting...")
         self.loopthread = threading.Thread( target=self.loop )
+        self.loopthread.start()
 
     def loop( self ):
         print("Loop thread")
