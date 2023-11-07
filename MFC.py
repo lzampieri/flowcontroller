@@ -10,6 +10,7 @@ from serial.serialutil import SerialException
 
 class MFC:
 
+
     def __init__(self, port, gas, tag, axis, saver, ID):
 
         self.ID = ID
@@ -104,10 +105,15 @@ class MFC:
             
             # Check that messagging thread is still alive ( it has a bug, and sometimes it dies after a while )
             if not self.MFC.master.msg_handler_thread.is_alive():
+                
                 print(f"Error on MFC {self.serial}")
+                self.MFC.master.stop()
                 del self.MFC
+                del propar._PROPAR_MASTERS[ self.port ]
+
                 print("Waiting 5 seconds before trying to reconnect")
                 time.sleep(5)
+                
                 self.MFC = propar.instrument(self.port)
                 print("Thread rebooted")
                 print(f"New serial: {self.MFC.readParameter(92) or 'Error!'}")
