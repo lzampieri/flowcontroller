@@ -21,6 +21,8 @@ class MFC:
 
         self.MFC = propar.instrument(port)
 
+        self.dead = False
+
         self.serial = self.MFC.readParameter(92) or ""
         if (len(self.serial) == 0):
             raise SerialException("Unable to connect")
@@ -59,7 +61,6 @@ class MFC:
             'reads': []
         }
 
-        self.dead = False
         self.thread = threading.Thread(target=self.pool_thrd)
         self.thread.start()
 
