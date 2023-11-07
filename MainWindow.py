@@ -75,6 +75,9 @@ class MainWindow:
 
             self.saver.parse_events(event, values, self.window)
 
+            if( self.st is not None ):
+                self.st.parse_events( event, values )
+
             for MFC in self.connectedMFC:
                 MFC.update_window(self.window)
 

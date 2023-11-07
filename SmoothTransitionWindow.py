@@ -26,7 +26,7 @@ class SmoothTransitionWindow:
 
         self.refreshMFC()
 
-    def parse_events(self, event, values, window):
+    def parse_events(self, event, values):
         if( event == 'sg:refresh' ):
             self.refreshMFC()
         pass
