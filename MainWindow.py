@@ -38,7 +38,7 @@ class MainWindow:
                                 layout=self.layout, finalize=True)
 
         self.init_plot()
-        self.st.refreshMFC()
+        self.st.refreshMFC( self.window )
 
         # TODO remove
         if (len(self.connectedMFC) == 0):
@@ -102,4 +102,4 @@ class MainWindow:
         self.window['main:cnum'].update(len(self.connectedMFC))
         self.axis.legend()
         
-        self.st.refreshMFC()
+        self.st.refreshMFC( self.window )
