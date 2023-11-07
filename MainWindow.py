@@ -68,9 +68,11 @@ class MainWindow:
                 MFC.parse_events(event, values, self.window)
 
             self.saver.parse_events(event, values, self.window)
+            self.st.parse_events( event, values, self.window )
 
             for MFC in self.connectedMFC:
                 MFC.update_window(self.window)
+            self.st.update_window( self.window )
 
             self.axis.relim()  # scale the y scale
             self.axis.autoscale_view()  # scale the y scale
