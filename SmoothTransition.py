@@ -64,7 +64,7 @@ class SmoothTransition:
             sg.Input(default_text=MFC.get_current_set_value(str=True), key=f"st:{MFC.ID}:to", size=7),
         ]])
 
-    def parse_value( value, MFC ):
+    def parse_value( self, value, MFC ):
         try:
             output = float( value )
             if (setpoint > MFC.max):
