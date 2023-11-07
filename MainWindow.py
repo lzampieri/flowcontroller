@@ -99,4 +99,4 @@ class MainWindow:
         self.window['main:cnum'].update(len(self.connectedMFC))
         self.axis.legend()
         
-        self.st.refreshMFC( self.window )
+        self.st.addMFC( newMFC, self.window )

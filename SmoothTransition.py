@@ -33,13 +33,10 @@ class SmoothTransition:
     # def parse_mainwindow_events(self, event, values):
     #     pass
 
-    def refreshMFC(self, window):
-        for MFC in self.connectedMFC:
-            print(MFC.ID)
-            if f'st:{MFC.ID}' not in window.AllKeysDict:
-                window.extend_layout(window['st:col'], [[
-                    sg.Text(f"{MFC.tag} ({MFC.gas}): from "),
-                    sg.Input(default_text=MFC.get_current_set_value(str=True), key=f"st:{MFC.ID}:from", size=7),
-                    sg.Text(" to "),
-                    sg.Input(default_text=MFC.get_current_set_value(str=True), key=f"st:{MFC.ID}:to", size=7),
-                ]])
+    def addMFC(self, MFC, window):
+        window.extend_layout(window['st:col'], [[
+            sg.Text(f"{MFC.tag} ({MFC.gas}): from "),
+            sg.Input(default_text=MFC.get_current_set_value(str=True), key=f"st:{MFC.ID}:from", size=7),
+            sg.Text(" to "),
+            sg.Input(default_text=MFC.get_current_set_value(str=True), key=f"st:{MFC.ID}:to", size=7),
+        ]])
