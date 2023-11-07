@@ -54,7 +54,7 @@ class SmoothTransition:
 
             window['st:abort'].update( disabled=not self.running )
             window['st:start'].update( disabled=self.running )
-            window['st:progress'].update( current_count=self.i, max_value = self.steps )
+            window['st:progress'].update( current_count=self.i, max = self.steps )
 
     def addMFC(self, MFC, window):
         window.extend_layout(window['st:col'], [[
