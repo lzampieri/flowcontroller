@@ -90,10 +90,10 @@ class SmoothTransition:
         for MFC in self.connectedMFC:
 
             start = self.parse_value( values[f"st:{MFC.ID}:from"], MFC )
-            window['st:{MFC.ID}:from'].update( f"{start:.2f}" )
+            window[f'st:{MFC.ID}:from'].update( f"{start:.2f}" )
             
             finish = self.parse_value( values[f"st:{MFC.ID}:to"], MFC )
-            window['st:{MFC.ID}:to'].update( f"{finish:.2f}" )
+            window[f'st:{MFC.ID}:to'].update( f"{finish:.2f}" )
 
             self.ranges[ MFC.ID ] = np.linspace( start, finish, self.steps )
 
