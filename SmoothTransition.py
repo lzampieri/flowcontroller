@@ -85,7 +85,7 @@ class SmoothTransition:
         window['st:duration'].update( duration )
         self.steps = duration
 
-        self.ranges = []
+        self.ranges = {}
 
         for MFC in self.connectedMFC:
 
