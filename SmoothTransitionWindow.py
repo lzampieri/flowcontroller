@@ -34,7 +34,7 @@ class SmoothTransitionWindow:
     def refreshMFC(self):
         for MFC in self.connectedMFC:
             if f'st:{MFC.ID}' not in self.window.AllKeysDict:
-                self.window.extend_layout('st:col', [[
+                self.window.extend_layout(self.window['st:col'], [[
                     sg.Text(f"{MFC.tag} ({MFC.gas}): from "),
                     sg.Input(default_text={MFC.get_current_set_value(str=True)}, key=f"st:{MFC.ID}:from", size=7),
                     sg.Text(" to "),
