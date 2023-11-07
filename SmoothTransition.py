@@ -67,10 +67,10 @@ class SmoothTransition:
     def parse_value( self, value, MFC ):
         try:
             output = float( value )
-            if (setpoint > MFC.max):
-                setpoint = MFC.max
-            if (setpoint < MFC.min):
-                setpoint = MFC.min
+            if (output > MFC.max):
+                output = MFC.max
+            if (output < MFC.min):
+                output = MFC.min
             return output
         except ValueError:
             return MFC.min
