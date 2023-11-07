@@ -102,14 +102,8 @@ class MFC:
             current_count=(self.get_current_set_value() - self.min) / (self.max - self.min) * 100)
 
         # Plot
-        nowtimestamp = datetime.now().timestamp()
-        idx = np.array( self.data['times'] ) > ( nowtimestamp - 60*5 )
-        print( np.sum( idx ) )
-        print( np.min( np.array( self.data['times'] ) ) )
-        print( np.max( np.array( self.data['times'] ) ) )
-        print(  datetime.now().timestamp() - 60*5 )
-        print( "---" )
-        self.line.set_data( ( np.array(self.data['times'])[idx] - nowtimestamp ) / 60, np.array(self.data['reads'])[idx] )
+        self.line.set_data((np.array(
+            self.data['times']) - datetime.now().timestamp()) / 60, self.data['reads'])
 
     def pool_thrd(self):
         while True:
