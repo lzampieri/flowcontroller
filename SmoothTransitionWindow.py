@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-
+import threading
 
 class SmoothTransitionWindow:
 
@@ -26,9 +26,17 @@ class SmoothTransitionWindow:
 
         self.refreshMFC()
 
-    def parse_events(self, event, values):
-        if( event == 'sg:refresh' ):
-            self.refreshMFC()
+        self.loopthread = threading.Thread( target=self.loop )
+
+    def loop( self ):
+        while True:
+            event, values = self.window.read(timeout=100)
+
+            if( event == 'sg:refresh' ):
+                self.refreshMFC()
+
+
+    def parse_mainwindow_events(self, event, values):
         pass
 
     def refreshMFC(self):
