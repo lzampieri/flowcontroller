@@ -3,7 +3,6 @@ import AddMFCWindow
 import Saver
 import MFC
 import SmoothTransition
-from serial.serialutil import SerialException
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg

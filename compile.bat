@@ -1,0 +1,1 @@
+D:\PythonEnvs\ForPyinstaller\Scripts\activate && rm -f -r dist && pyinstaller.exe --onefile main.py
