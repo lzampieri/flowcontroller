@@ -2,7 +2,7 @@ import PySimpleGUI as sg
 import AddMFCWindow
 import Saver
 import MFC
-import SmoothTransition
+from serial.serialutil import SerialException
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -18,7 +18,6 @@ class MainWindow:
         self.connectedMFC = []
 
         self.saver = Saver.Saver(self.connectedMFC)
-        self.st = SmoothTransition.SmoothTransition(self.connectedMFC)
 
         self.layout = [[
             sg.Column([
@@ -26,7 +25,6 @@ class MainWindow:
                 [sg.Column([], key="main:col")],
                 [sg.Button("Aggiungi MFC", key='main:addMFC')],
                 self.saver.layout,
-                self.st.layout,
                 [sg.Text("L. Zampieri - 11/2023", font=('Helvetica', 7))]
             ]),
             sg.Canvas(key='canvas')
@@ -38,7 +36,6 @@ class MainWindow:
 
         self.init_plot()
 
-        # TODO remove
         if (len(self.connectedMFC) == 0):
             self.addMFC()
 
@@ -63,19 +60,25 @@ class MainWindow:
             if event == sg.WIN_CLOSED:
                 return
 
+            for i, id in enumerate( [ i.ID for i in self.connectedMFC ] ):
+                if event == f'mfc:{id}:delete':
+                    mfc = self.connectedMFC.pop( i )
+                    del mfc
+                    self.window[f'mfc:{id}'].update( visible = False )
+
             for MFC in self.connectedMFC:
                 MFC.parse_events(event, values, self.window)
 
             self.saver.parse_events(event, values, self.window)
-            self.st.parse_events( event, values, self.window )
 
-            for MFC in self.connectedMFC:
-                MFC.update_window(self.window)
-            self.st.update_window( self.window )
+            if( len( self.connectedMFC ) > 0 ):
 
-            self.axis.relim()  # scale the y scale
-            self.axis.autoscale_view()  # scale the y scale
-            self.tkcanvas.draw()
+                for MFC in self.connectedMFC:
+                    MFC.update_window(self.window)
+
+                self.axis.relim()  # scale the y scale
+                self.axis.autoscale_view()  # scale the y scale
+                self.tkcanvas.draw()
 
     def addMFC(self):
         amw = AddMFCWindow.AddMFCWindow(
@@ -98,5 +101,3 @@ class MainWindow:
         newMFC.bind_events(self.window)
         self.window['main:cnum'].update(len(self.connectedMFC))
         self.axis.legend()
-        
-        self.st.addMFC( newMFC, self.window )

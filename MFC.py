@@ -10,7 +10,6 @@ from serial.serialutil import SerialException
 
 class MFC:
 
-
     def __init__(self, port, gas, tag, axis, saver, ID):
 
         self.ID = ID
@@ -21,11 +20,9 @@ class MFC:
 
         self.MFC = propar.instrument(port)
 
-        self.dead = False
-
-        self.serial = self.MFC.readParameter(92) or ""
-        # if (len(self.serial) == 0):
-        #     raise SerialException("Unable to connect")
+        self.serial = self.MFC.readParameter(92) or "44"
+        if (len(self.serial) == 0):
+            raise SerialException("Unable to connect")
 
         self.unit = self.MFC.readParameter(129)
         self.min = float(self.MFC.readParameter(
@@ -39,7 +36,8 @@ class MFC:
 
         self.layout = [[
             sg.Frame(f"{tag} ({gas}, {port})", [
-                [sg.Text(f"SN: {self.serial}", font=('Helvetica', 7))],
+                [sg.Text(f"SN: {self.serial}", font=('Helvetica', 7)),
+                    sg.Button(f"X", key=f'mfc:{ID}:delete')],
                 [sg.Text(f"{self.min:.1f} to {self.max:.1f} {self.unit}", font=(
                     'Helvetica', 7))],
                 [sg.Text(f"...", key=f'mfc:{ID}:current_value', font=(
@@ -53,7 +51,7 @@ class MFC:
                 ],
                 [sg.ProgressBar(max_value=100, orientation='h',
                                 size=(40, 10), key=f'mfc:{ID}:progress')]
-            ])
+            ], key = f'mfc:{ID}' )
         ]]
 
         self.data = {
@@ -87,9 +85,6 @@ class MFC:
 
     def update_window(self, window):
 
-        if( self.dead ):
-            return
-
         # Read
         if (len(self.data['reads']) > 0):
             window[f'mfc:{self.ID}:current_value'].update(
@@ -102,35 +97,17 @@ class MFC:
             current_count=(self.get_current_set_value() - self.min) / (self.max - self.min) * 100)
 
         # Plot
-        times = ( np.array(self.data['times']) - datetime.now().timestamp() ) / 60
-        reads =  self.data['reads']
-        if( len( times ) != len( reads ) ):
-            minlen = np.min( [ len( times ), len( reads ) ] )
-            times = times[ 0 : minlen ]
-            reads = reads[ 0 : minlen ]
-        self.line.set_data( times, reads )
+        self.line.set_data((np.array(
+            self.data['times']) - datetime.now().timestamp()) / 60, self.data['reads'])
 
     def pool_thrd(self):
         while True:
             
             # Check that messagging thread is still alive ( it has a bug, and sometimes it dies after a while )
             if not self.MFC.master.msg_handler_thread.is_alive():
-                
-                self.dead = True
-                print(f"Error on MFC {self.serial}")
-                self.MFC.master.stop()
                 del self.MFC
-                del propar._PROPAR_MASTERS[ self.port ]
-
-                print("Waiting 5 seconds before trying to reconnect")
-                time.sleep(5)
-                
                 self.MFC = propar.instrument(self.port)
                 print("Thread rebooted")
-                newserial = self.MFC.readParameter(92) or 'Error!'
-                print(f"New serial: {newserial}")
-                if( newserial == self.serial ):
-                    self.dead = False
 
             try:
                 newval = self.get_current_value()
@@ -144,8 +121,6 @@ class MFC:
             time.sleep(0.1)
 
     def get_current_value(self, str=False):
-        if( self.dead ):
-            return 0.0
         meas = float(self.MFC.readParameter(205) or "0.0") * \
             GasesFactors[self.gas]
         if (str):
@@ -153,8 +128,6 @@ class MFC:
         return meas
 
     def get_current_set_value(self, str=False):
-        if( self.dead ):
-            return 0.0
         meas = float(self.MFC.readParameter(206) or "0.0") * \
             GasesFactors[self.gas]
         if (str):
@@ -162,6 +135,4 @@ class MFC:
         return meas
 
     def set_current_set_value(self, val):
-        if( self.dead ):
-            return False
         self.MFC.writeParameter(206, val / GasesFactors[self.gas])
