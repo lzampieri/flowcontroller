@@ -1,6 +1,7 @@
 # Savings
 2023*
 launch.json
+*.conf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -105,9 +105,13 @@ class MFC:
             
             # Check that messagging thread is still alive ( it has a bug, and sometimes it dies after a while )
             if not self.MFC.master.msg_handler_thread.is_alive():
+                self.MFC.master.stop()
+
+                del propar._PROPAR_MASTERS[self.port]
+
                 del self.MFC
                 self.MFC = propar.instrument(self.port)
-                print("Thread rebooted")
+                print(f"Thread rebooted for {self.serial} ({self.port})")
 
             try:
                 newval = self.get_current_value()

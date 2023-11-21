@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import AddMFCWindow
 import Saver
 import MFC
+import ConfSaver
 from serial.serialutil import SerialException
 
 import matplotlib.pyplot as plt
@@ -19,12 +20,15 @@ class MainWindow:
 
         self.saver = Saver.Saver(self.connectedMFC)
 
+        self.confsaver = ConfSaver.ConfSaver( self.connectedMFC, self.saveMFC )
+
         self.layout = [[
             sg.Column([
                 [sg.Text("0", key="main:cnum"), sg.Text(" MFC connessi")],
                 [sg.Column([], key="main:col")],
                 [sg.Button("Aggiungi MFC", key='main:addMFC')],
                 self.saver.layout,
+                self.confsaver.layout,
                 [sg.Text("L. Zampieri - 11/2023", font=('Helvetica', 7))]
             ]),
             sg.Canvas(key='canvas')
@@ -70,6 +74,7 @@ class MainWindow:
                 MFC.parse_events(event, values, self.window)
 
             self.saver.parse_events(event, values, self.window)
+            self.confsaver.parse_events(event, values, self.window)
 
             if( len( self.connectedMFC ) > 0 ):
 
