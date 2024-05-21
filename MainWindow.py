@@ -90,12 +90,12 @@ class MainWindow:
             alreadyConn=[d.port for d in self.connectedMFC])
         newMFC = amw.run()
         if (newMFC):
-            self.saveMFC(newMFC)
+            self.saveMFC(**newMFC)
 
-    def saveMFC(self, data):
+    def saveMFC(self, port, gas, tag):
         try:
             self.MFC_ID += 1
-            newMFC = MFC.MFC(**data, axis=self.axis,
+            newMFC = MFC.MFC(port, gas, tag, axis=self.axis,
                              saver=self.saver, ID=self.MFC_ID)
         except SerialException as e:
             sg.popup_error("Impossibile connettersi alla porta")

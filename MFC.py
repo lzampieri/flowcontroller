@@ -20,7 +20,7 @@ class MFC:
 
         self.MFC = propar.instrument(port)
 
-        self.serial = self.MFC.readParameter(92) or "44"
+        self.serial = ( self.MFC.readParameter(92) or "44" ).strip()
         if (len(self.serial) == 0):
             raise SerialException("Unable to connect")
 

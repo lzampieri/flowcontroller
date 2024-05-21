@@ -1,6 +1,23 @@
 import PySimpleGUI as sg
 from serial.tools import list_ports
 from constants import GasesFactors
+import propar
+
+class AvailablePort:
+
+    def __init__(self, port):
+        self.port = port
+
+        try:
+            # Try to open the port
+            device = propar.instrument(port)
+            # Read the serial
+            self.serial = ( device.readParameter(92) or "").strip()
+        except:
+            self.serial = ""
+
+    def __str__(self):
+        return self.port + " - " + ( "SN: " + self.serial if self.serial else "No MFC connected" )
 
 
 class AddMFCWindow:
@@ -29,8 +46,7 @@ class AddMFCWindow:
         self.alreadyConn = alreadyConn
 
     def refresh_ports(self):
-        ports = list(filter(lambda p: p.device not in self.alreadyConn,
-                            list_ports.comports()))
+        ports = [ AvailablePort(p.device) for p in list_ports.comports() if p.device not in self.alreadyConn]
         self.window['addMFC:ports_combo'].update(
             values=[p for p in ports], value=(ports[0] if len(ports) > 0 else ""))
 
@@ -53,7 +69,7 @@ class AddMFCWindow:
             if event == 'addMFC:save':
 
                 # Check for port
-                port = getattr( values['addMFC:ports_combo'], 'device', "" )
+                port = getattr(values['addMFC:ports_combo'], 'port', "")
 
                 if port not in [p.device for p in list_ports.comports()]:
                     self.showError('Porta non valida')
